@@ -1,0 +1,41 @@
+/* ---- OK: top-level rules are localized, even when the selector starts with a type selector ---- */
+button.root.hovered { color: red; }
+div > button.root { color: red; }
+
+/* ---- OK: inside an at-rule, a selector that starts with a class is localized ---- */
+@media (hover: hover) { .root.hovered { color: green; } }
+
+/* ---- BUG: inside an at-rule, a selector that starts with a type selector is emitted verbatim ---- */
+@media (hover: hover) { button.root.hovered { color: blue; } }
+@media (hover: hover) { div .root { color: blue; } }
+@media (hover: hover) { div > button.root { color: blue; } }
+@media (hover: hover) { button + .next { color: blue; } }
+@media (hover: hover) { input[type="text"].root { color: blue; } }
+
+/* ---- BUG: not only @media ---- */
+@supports (display: grid) { button.root { color: blue; } }
+@container (min-width: 1px) { button.root { color: blue; } }
+@layer base { button.root { color: blue; } }
+.outer { @media (hover: hover) { button.root { color: blue; } } }
+
+/* ---- BUG: same for a style rule nested in another style rule, no at-rule involved ---- */
+.outer { button.inner { color: blue; } }
+
+/* ---- BUG: the whole selector list is skipped, including later class-first selectors ---- */
+@media (hover: hover) { button.first, .second { color: blue; } }
+
+/* ---- BUG: :global() / :local() are left in the output, so the browser drops the rule as invalid ---- */
+@media (hover: hover) { button.root:global(.plain) { color: blue; } }
+@media (hover: hover) { button:local(.local) { color: blue; } }
+
+/* ---- OK (controls): anything other than an identifier at the start of the selector works ---- */
+@media (hover: hover) { *.root { color: blue; } }
+@media (hover: hover) { :is(button).root { color: blue; } }
+@media (hover: hover) { .wrap button.root { color: blue; } }
+@media (hover: hover) { .first, button.second { color: blue; } }
+@media (hover: hover) { .root:global(.plain) { color: blue; } }
+.outer { & button.inner { color: blue; } }
+
+/* ---- Only the type-first rule itself is skipped: rules after it and rules nested in it are still localized ---- */
+@media (hover: hover) { button.root { color: blue; } .after { color: blue; } }
+@media (hover: hover) { button { .nested { color: blue; } } }

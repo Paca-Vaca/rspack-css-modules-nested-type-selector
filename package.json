@@ -1,0 +1,16 @@
+{
+  "name": "rspack-css-modules-nested-type-selector",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "repro": "node repro.mjs",
+    "build:rspack": "rspack build",
+    "build:webpack": "webpack"
+  },
+  "devDependencies": {
+    "@rspack/cli": "2.2.8",
+    "@rspack/core": "2.2.8",
+    "webpack": "^5.0.0",
+    "webpack-cli": "^6.0.0"
+  }
+}
